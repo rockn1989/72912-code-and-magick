@@ -432,17 +432,40 @@ window.Game = (function() {
       this.ctx.fillStyle = '#000000';
       this.ctx.font = '16px PT Mono';
       this.ctx.textBaseline = 'hanging';
-
-      this._drawText(this.ctx, text);
+      this._drawPortableText(text, 28);
     },
     /**
      * Отрисовка текста.
      */
     _drawText: function(ctx, arrayText) {
+
       var posX = 320, posY = 45, lineHeight = 20;
       arrayText.forEach(function(el, i) {
         ctx.fillText(el, posX, posY + (lineHeight * i) );
       });
+    },
+    /**
+     * Отрисовка текста с переносом слов.
+     */
+    _drawPortableText: function(text, textLength) {
+      var posX = 320,
+        posY = 45,
+        selfCtx = this.ctx;
+      if(text.length > textLength) {
+        var arrayWord = text.split(' ');
+        var newString = '';
+        var lineHeight = 0;
+        arrayWord.forEach(function(el, i) {
+          newString += el + ' ';
+          if(newString.length + el.length > textLength || arrayWord.length - 1 === i) {
+            selfCtx.fillText(newString, posX, posY + (20 * lineHeight) );
+            lineHeight++;
+            newString = '';
+          }
+        });
+      } else {
+        selfCtx.fillText(text, posX, posY);
+      }
     },
     /**
      * Отрисовка экрана паузы.
@@ -450,16 +473,16 @@ window.Game = (function() {
     _drawPauseScreen: function() {
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          this._drawResult(['Вы победили!']);
+          this._drawResult('Вы победили!');
           break;
         case Verdict.FAIL:
-          this._drawResult(['Вы проиграли']);
+          this._drawResult('Вы проиграли');
           break;
         case Verdict.PAUSE:
-          this._drawResult(['Игра стоит на паузе']);
+          this._drawResult('Игра стоит на паузе');
           break;
         case Verdict.INTRO:
-          this._drawResult(['Добро пожаловать в игру!', 'Нажмите старт чтобы начать']);
+          this._drawResult('Я умею перемещаться и летать по нажатию на стрелки. А если нажать шифт, я выстрелю файрболом');
           break;
       }
     },
