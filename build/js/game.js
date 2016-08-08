@@ -390,23 +390,76 @@ window.Game = (function() {
         window.removeEventListener('keydown', this._pauseListener);
       }
     },
+    /**
+     * Отрисовка холста для текста.
+     */
+    _drawResult: function(text) {
 
+      var bgLeftTopStart = [320, 50],
+        bgRightTop = [620, 50],
+        bgRightBottom = [620, 175],
+        bgLeftBottom = [300, 205],
+        bgLeftTopEnd = [320, 50];
+
+      this.ctx.fillStyle = 'rgba(0, 0, 0, .7)';
+
+      this.ctx.beginPath();
+      this.ctx.moveTo(bgLeftTopStart[0], bgLeftTopStart[1]);
+      this.ctx.lineTo(bgRightTop[0], bgRightTop[1]);
+      this.ctx.lineTo(bgRightBottom[0], bgRightBottom[1]);
+      this.ctx.lineTo(bgLeftBottom[0], bgLeftBottom[1]);
+      this.ctx.lineTo(bgLeftTopEnd[0], bgLeftTopEnd[1]);
+      this.ctx.fill();
+
+      var leftTopStart = [310, 40],
+        rightTop = [610, 40],
+        rightBottom = [610, 165],
+        leftBottom = [290, 195],
+        leftTopEnd = [310, 40];
+
+      this.ctx.fillStyle = '#ffffff';
+
+      this.ctx.beginPath();
+      this.ctx.moveTo(leftTopStart[0], leftTopStart[1]);
+      this.ctx.lineTo(rightTop[0], rightTop[1]);
+      this.ctx.lineTo(rightBottom[0], rightBottom[1]);
+      this.ctx.lineTo(leftBottom[0], leftBottom[1]);
+      this.ctx.lineTo(leftTopEnd[0], leftTopEnd[1]);
+      this.ctx.fill();
+      this.ctx.closePath();
+
+
+      this.ctx.fillStyle = '#000000';
+      this.ctx.font = '16px PT Mono';
+      this.ctx.textBaseline = 'hanging';
+
+      this._drawText(this.ctx, text);
+    },
+    /**
+     * Отрисовка текста.
+     */
+    _drawText: function(ctx, arrayText) {
+      var posX = 320, posY = 45, lineHeight = 20;
+      arrayText.forEach(function(el, i) {
+        ctx.fillText(el, posX, posY + (lineHeight * i) );
+      });
+    },
     /**
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          console.log('you have won!');
+          this._drawResult(['Вы победили!']);
           break;
         case Verdict.FAIL:
-          console.log('you have failed!');
+          this._drawResult(['Вы проиграли']);
           break;
         case Verdict.PAUSE:
-          console.log('game is on pause!');
+          this._drawResult(['Игра стоит на паузе']);
           break;
         case Verdict.INTRO:
-          console.log('welcome to the game! Press Space to start');
+          this._drawResult(['Добро пожаловать в игру!', 'Нажмите старт чтобы начать']);
           break;
       }
     },
