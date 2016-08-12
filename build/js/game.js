@@ -394,78 +394,72 @@ window.Game = (function() {
      * Отрисовка холста для текста.
      */
     _drawResult: function(text) {
+      var incomingTextArray = this._splitText(text, 28);
+      var posX = 320;
+      var posY = 45;
+      var textHeight = 0;
+      var lineHeight = 20;
+      textHeight += lineHeight * 2 + (lineHeight * incomingTextArray.length);
 
-      var bgLeftTopStart = [320, 50],
-        bgRightTop = [620, 50],
-        bgRightBottom = [620, 175],
-        bgLeftBottom = [300, 205],
-        bgLeftTopEnd = [320, 50];
+      this.bgCoords = {
+        leftTop: [320, 50],
+        rightTop: [620, 50],
+        rightBottom: [620, textHeight + 10 || 175],
+        leftBottom: [300, textHeight + 40 || 205]
+      };
 
       this.ctx.fillStyle = 'rgba(0, 0, 0, .7)';
 
       this.ctx.beginPath();
-      this.ctx.moveTo(bgLeftTopStart[0], bgLeftTopStart[1]);
-      this.ctx.lineTo(bgRightTop[0], bgRightTop[1]);
-      this.ctx.lineTo(bgRightBottom[0], bgRightBottom[1]);
-      this.ctx.lineTo(bgLeftBottom[0], bgLeftBottom[1]);
-      this.ctx.lineTo(bgLeftTopEnd[0], bgLeftTopEnd[1]);
+      this.ctx.moveTo(this.bgCoords.leftTop[0], this.bgCoords.leftTop[1]);
+      this.ctx.lineTo(this.bgCoords.rightTop[0], this.bgCoords.rightTop[1]);
+      this.ctx.lineTo(this.bgCoords.rightBottom[0], this.bgCoords.rightBottom[1]);
+      this.ctx.lineTo(this.bgCoords.leftBottom[0], this.bgCoords.leftBottom[1]);
+      this.ctx.closePath();
       this.ctx.fill();
 
-      var leftTopStart = [310, 40],
-        rightTop = [610, 40],
-        rightBottom = [610, 165],
-        leftBottom = [290, 195],
-        leftTopEnd = [310, 40];
+      this.coords = {
+        leftTop: [310, 40],
+        rightTop: [610, 40],
+        rightBottom: [610, textHeight || 165],
+        leftBottom: [290, textHeight + 30 || 195]
+      };
 
       this.ctx.fillStyle = '#ffffff';
 
       this.ctx.beginPath();
-      this.ctx.moveTo(leftTopStart[0], leftTopStart[1]);
-      this.ctx.lineTo(rightTop[0], rightTop[1]);
-      this.ctx.lineTo(rightBottom[0], rightBottom[1]);
-      this.ctx.lineTo(leftBottom[0], leftBottom[1]);
-      this.ctx.lineTo(leftTopEnd[0], leftTopEnd[1]);
-      this.ctx.fill();
+      this.ctx.moveTo(this.coords.leftTop[0], this.coords.leftTop[1]);
+      this.ctx.lineTo(this.coords.rightTop[0], this.coords.rightTop[1]);
+      this.ctx.lineTo(this.coords.rightBottom[0], this.coords.rightBottom[1]);
+      this.ctx.lineTo(this.coords.leftBottom[0], this.coords.leftBottom[1]);
       this.ctx.closePath();
+      this.ctx.fill();
+
 
 
       this.ctx.fillStyle = '#000000';
       this.ctx.font = '16px PT Mono';
       this.ctx.textBaseline = 'hanging';
-      this._drawPortableText(text, 28);
-    },
-    /**
-     * Отрисовка текста.
-     */
-    _drawText: function(ctx, arrayText) {
 
-      var posX = 320, posY = 45, lineHeight = 20;
-      arrayText.forEach(function(el, i) {
-        ctx.fillText(el, posX, posY + (lineHeight * i) );
-      });
+      incomingTextArray.forEach(function(el, i) {
+        this.ctx.fillText(el, posX, posY + ( lineHeight * i));
+      }, this);
     },
     /**
      * Отрисовка текста с переносом слов.
      */
-    _drawPortableText: function(text, textLength) {
-      var posX = 320,
-        posY = 45,
-        selfCtx = this.ctx;
-      if(text.length > textLength) {
-        var arrayWord = text.split(' ');
-        var newString = '';
-        var lineHeight = 0;
-        arrayWord.forEach(function(el, i) {
-          newString += el + ' ';
-          if(newString.length + el.length > textLength || arrayWord.length - 1 === i) {
-            selfCtx.fillText(newString, posX, posY + (20 * lineHeight) );
-            lineHeight++;
-            newString = '';
-          }
-        });
-      } else {
-        selfCtx.fillText(text, posX, posY);
-      }
+    _splitText: function(text, lengthOfValidity) {
+      var arrayWords = text.split(' ');
+      var newString = '';
+      var arrayWordsForResult = [];
+      arrayWords.forEach(function(el, i) {
+        newString += el + ' ';
+        if(newString.length + el.length > lengthOfValidity || arrayWords.length - 1 === i) {
+          arrayWordsForResult.push(newString);
+          newString = '';
+        }
+      });
+      return arrayWordsForResult;
     },
     /**
      * Отрисовка экрана паузы.
@@ -482,7 +476,7 @@ window.Game = (function() {
           this._drawResult('Игра стоит на паузе');
           break;
         case Verdict.INTRO:
-          this._drawResult('Я умею перемещаться и летать по нажатию на стрелки. А если нажать шифт, я выстрелю файрболом');
+          this._drawResult('Я умею перемещаться и летать по нажатию на стрелки. А если нажать шифт, я выстрелю файрболом. Cлова «магия», «маг», «магическая сила» часто используются в переносном смысле, например, литературоведы любят выражения типа «магия пушкинского слова»');
           break;
       }
     },
