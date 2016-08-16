@@ -1,5 +1,7 @@
 'use strict';
 
+var browserCookies = require('browser-cookies');
+
 window.form = (function() {
   var formContainer = document.querySelector('.overlay-container');
   var formCloseButton = document.querySelector('.review-form-close');
@@ -36,6 +38,30 @@ window.form = (function() {
 
   }
 
+  function setCookie() {
+    var today = new Date();
+    var birthday = new Date();
+    birthday.setMonth(11);
+    birthday.setDate(9);
+    var differenceDate = today - birthday;
+    differenceDate = differenceDate <= 0 ? today - (birthday.setFullYear(birthday.getFullYear() - 1)) : differenceDate;
+    var cookieDay = Math.floor(differenceDate / 1000 / 3600 / 24);
+
+    browserCookies.set('review-mark', rating.value, {expires: cookieDay});
+    browserCookies.set('review-name', requiredFieldName.value, {expires: cookieDay});
+  }
+
+  function initCookie() {
+    var ratingCookie = browserCookies.get('review-mark');
+    var requiredFieldNameCookie = browserCookies.get('review-name');
+    if(ratingCookie) {
+      rating.value = ratingCookie;
+    }
+    if(requiredFieldNameCookie) {
+      requiredFieldName.value = requiredFieldNameCookie;
+    }
+  }
+
   rating.forEach(function(el) {
     el.addEventListener('change', validateForm);
   });
@@ -44,8 +70,8 @@ window.form = (function() {
 
   textArea.addEventListener('input', validateForm);
 
-  currentForm.addEventListener('submit', validateForm);
-
+  currentForm.addEventListener('submit', setCookie);
+  initCookie();
   validateForm();
 
   var form = {
