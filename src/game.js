@@ -1,6 +1,6 @@
 'use strict';
 
-window.Game = (function() {
+define(function() {
   /**
    * @const
    * @type {number}
@@ -767,4 +767,5 @@ window.Game = (function() {
   Game.Verdict = Verdict;
 
   return Game;
-})();
+
+});

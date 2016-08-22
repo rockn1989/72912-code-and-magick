@@ -1,8 +1,7 @@
 'use strict';
 
-var browserCookies = require('browser-cookies');
+define(['browser-cookies'], function(browsercookies) {
 
-window.form = (function() {
   var formContainer = document.querySelector('.overlay-container');
   var formCloseButton = document.querySelector('.review-form-close');
 
@@ -22,7 +21,7 @@ window.form = (function() {
 
     textArea.required = rating.value < 3;
     var isTextValid;
-    if(textArea.required) {
+    if (textArea.required) {
       isTextValid = textArea.value !== '';
     } else {
       isTextValid = true;
@@ -47,17 +46,17 @@ window.form = (function() {
     differenceDate = differenceDate <= 0 ? today - (birthday.setFullYear(birthday.getFullYear() - 1)) : differenceDate;
     var cookieDay = Math.floor(differenceDate / 1000 / 3600 / 24);
 
-    browserCookies.set('review-mark', rating.value, {expires: cookieDay});
-    browserCookies.set('review-name', requiredFieldName.value, {expires: cookieDay});
+    browsercookies.set('review-mark', rating.value, {expires: cookieDay});
+    browsercookies.set('review-name', requiredFieldName.value, {expires: cookieDay});
   }
 
   function initCookie() {
-    var ratingCookie = browserCookies.get('review-mark');
-    var requiredFieldNameCookie = browserCookies.get('review-name');
-    if(ratingCookie) {
+    var ratingCookie = browsercookies.get('review-mark');
+    var requiredFieldNameCookie = browsercookies.get('review-name');
+    if (ratingCookie) {
       rating.value = ratingCookie;
     }
-    if(requiredFieldNameCookie) {
+    if (requiredFieldNameCookie) {
       requiredFieldName.value = requiredFieldNameCookie;
     }
   }
@@ -101,4 +100,4 @@ window.form = (function() {
   };
 
   return form;
-})();
+});
