@@ -61,7 +61,7 @@ define(['browser-cookies'], function(browsercookies) {
     }
   }
 
-  rating.forEach(function(el) {
+  Array.prototype.forEach.call(rating, function(el) {
     el.addEventListener('change', validateForm);
   });
 
