@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./form', './game', './reviews'], function(form, Game) {
+define(['./form', './game', './gallery', './reviews'], function(form, Game, Gallery) {
   var game = new Game(document.querySelector('.demo'));
   game.initializeLevelAndStart();
   game.setGameStatus(Game.Verdict.INTRO);
@@ -20,5 +20,19 @@ define(['./form', './game', './reviews'], function(form, Game) {
   form.onClose = function() {
     game.setDeactivated(false);
   };
+  var galleryImg = document.querySelectorAll('.photogallery .photogallery-image img');
+  var galleryLink = document.querySelectorAll('.photogallery .photogallery-image');
+
+  var picture = Array.prototype.map.call(galleryImg, function(img) {
+    return img.src;
+  });
+
+  var gallery = new Gallery(picture);
+
+  Array.prototype.forEach.call(galleryLink, function(link, i) {
+    link.addEventListener('click', function() {
+      gallery.show(i);
+    });
+  });
 });
 
