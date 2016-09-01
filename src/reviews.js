@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./load', './review'], function(load, getReviewElement) {
+define(['./load', './review'], function(load, Review) {
 
   var reviewsFilter = document.querySelector('.reviews-filter');
   var reviewsList = document.querySelector('.reviews-list');
@@ -24,7 +24,8 @@ define(['./load', './review'], function(load, getReviewElement) {
     var elFragment = document.createDocumentFragment();
 
     reviews.forEach(function(reviewData) {
-      elFragment.appendChild(getReviewElement(reviewData));
+      var review = new Review(reviewData);
+      elFragment.appendChild(review.element);
     });
 
     reviewsList.appendChild(elFragment);
