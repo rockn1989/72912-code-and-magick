@@ -1,6 +1,6 @@
 'use strict';
 
-define(function() {
+define(['./throttle'], function(throttle) {
   /**
    * @const
    * @type {number}
@@ -260,12 +260,14 @@ define(function() {
     this.setDeactivated(false);
 
     var self = this;
-    this.lastTime = Date.now();
+
     this.clouds = document.querySelector('.header-clouds');
     this.clouds.style.backgroundPosition = 'top left ' + 0 + 'px';
-    this._onSetScrollEnabled = this._setScrollEnabled.bind(self);
     this._onCloudsMove = this._cloudsMove.bind(self);
-    window.addEventListener('scroll', this._onSetScrollEnabled);
+    this._onSetScrollEnabled = this._setScrollEnabled.bind(self);
+    this._onThrottleScroll = throttle(this._onSetScrollEnabled, 100);
+
+    window.addEventListener('scroll', this._onThrottleScroll);
     window.addEventListener('scroll', this._onCloudsMove);
   };
 
@@ -773,27 +775,24 @@ define(function() {
     },
 
     _setScrollEnabled: function() {
+      var self = this;
       var clouds = this.clouds;
       var demo = document.querySelector('.demo');
-      var self = this;
+      var elementsPosition = clouds.getBoundingClientRect().bottom;
+      var gameBlockPosition = demo.getBoundingClientRect().bottom;
 
-      if(Date.now() - this.lastTime >= 100) {
-        var elementsPosition = clouds.getBoundingClientRect().bottom;
-        var gameBlockPosition = demo.getBoundingClientRect().bottom;
-
-        if(elementsPosition <= 0) {
-          window.removeEventListener('scroll', self._onCloudsMove);
-        } else {
-          window.addEventListener('scroll', self._onCloudsMove);
-        }
-        if(gameBlockPosition <= 0) {
-          self.setGameStatus(Verdict.PAUSE);
-        }
+      if(elementsPosition <= 0) {
+        window.removeEventListener('scroll', self._onCloudsMove);
+      } else {
+        window.addEventListener('scroll', self._onCloudsMove);
       }
-      this.lastTime = Date.now();
+      if(gameBlockPosition <= 0) {
+        self.setGameStatus(Verdict.PAUSE);
+      }
+
     },
     _cloudsMove: function() {
-      this.clouds.style.backgroundPosition = 'top left ' + (document.body.scrollTop || document.documentElement.scrollTop * -1) + 'px';
+      this.clouds.style.backgroundPosition = 'top left ' + (document.body.scrollTop || document.documentElement.scrollTop) + 'px';
     }
   };
 
