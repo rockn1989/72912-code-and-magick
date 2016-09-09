@@ -258,6 +258,15 @@ define(function() {
     this._pauseListener = this._pauseListener.bind(this);
 
     this.setDeactivated(false);
+
+    var self = this;
+    this.lastTime = Date.now();
+    this.clouds = document.querySelector('.header-clouds');
+    this.clouds.style.backgroundPosition = 'top left ' + 0 + 'px';
+    this._onSetScrollEnabled = this._setScrollEnabled.bind(self);
+    this._onCloudsMove = this._cloudsMove.bind(self);
+    window.addEventListener('scroll', this._onSetScrollEnabled);
+    window.addEventListener('scroll', this._onCloudsMove);
   };
 
   Game.prototype = {
@@ -761,6 +770,30 @@ define(function() {
     _removeGameListeners: function() {
       window.removeEventListener('keydown', this._onKeyDown);
       window.removeEventListener('keyup', this._onKeyUp);
+    },
+
+    _setScrollEnabled: function() {
+      var clouds = this.clouds;
+      var demo = document.querySelector('.demo');
+      var self = this;
+
+      if(Date.now() - this.lastTime >= 100) {
+        var elementsPosition = clouds.getBoundingClientRect().bottom;
+        var gameBlockPosition = demo.getBoundingClientRect().bottom;
+
+        if(elementsPosition <= 0) {
+          window.removeEventListener('scroll', self._onCloudsMove);
+        } else {
+          window.addEventListener('scroll', self._onCloudsMove);
+        }
+        if(gameBlockPosition <= 0) {
+          self.setGameStatus(Verdict.PAUSE);
+        }
+      }
+      this.lastTime = Date.now();
+    },
+    _cloudsMove: function() {
+      this.clouds.style.backgroundPosition = 'top left ' + (document.body.scrollTop || document.documentElement.scrollTop * -1) + 'px';
     }
   };
 
