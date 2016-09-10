@@ -7,8 +7,10 @@ define(['./load', './review'], function(load, Review) {
   var reviewsFilter = document.querySelector('.reviews-filter');
   var reviewsList = document.querySelector('.reviews-list');
   var reviewsLoadMore = document.querySelector('.reviews-controls-more');
-  var filter = 'reviews-all';
-
+  var filter = localStorage.filterSave || 'reviews-all';
+  if(filter) {
+    reviewsFilter.querySelector('#' + filter).checked = true;
+  }
   /**
    * Выводит постранично сообщения
    */
@@ -22,6 +24,7 @@ define(['./load', './review'], function(load, Review) {
     reviewsList.innerHTML = '';
     pagePosts = 1;
     filter = evt.target.id;
+    localStorage.setItem('filterSave', evt.target.id);
     loadReviews();
   });
 
