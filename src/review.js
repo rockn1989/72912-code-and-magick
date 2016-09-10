@@ -10,7 +10,6 @@ define(['./loadImage'], function(loadImage) {
  * @returns {object} объект блока отзыва
  */
   function Review(data) {
-    var self = this;
     this.data = data;
     this.element = elementToClone.cloneNode(true);
     this.answerYes = this.element.querySelector('.review-quiz-answer-yes');
@@ -18,18 +17,19 @@ define(['./loadImage'], function(loadImage) {
     this.element.querySelector('.review-text').textContent = this.data.description;
     this.setRating();
 
-    this.answerYes.onclick = this.answerNo.onclick = function(e) {
-      self.setQuizAnswer(e.target);
-    };
+    this.setQuizAnswer = this.setQuizAnswer.bind(this);
+    this.remove = this.remove.bind(this);
+    this.answerYes.addEventListener('click', this.setQuizAnswer);
+    this.answerNo.addEventListener('click', this.setQuizAnswer);
     this.imageLoad();
   }
 
   /**
    * Выделяет правильный ответ
-   * @param {HTMLInputElement} target
+   * @param {HTMLInputElement} evt
    */
-  Review.prototype.setQuizAnswer = function(target) {
-    var isYes = target === this.answerYes;
+  Review.prototype.setQuizAnswer = function(evt) {
+    var isYes = evt.target.classList.contains('review-quiz-answer-yes');
     this.answerYes.classList.toggle('review-quiz-answer-active', isYes);
     this.answerNo.classList.toggle('review-quiz-answer-active', !isYes);
   };
@@ -38,8 +38,8 @@ define(['./loadImage'], function(loadImage) {
    * Удаляет обработчики событий по клику
    */
   Review.prototype.remove = function() {
-    this.answerYes.onclick = null;
-    this.answerNo.onclick = null;
+    this.answerYes.removeEventListener('click', this.setQuizAnswer);
+    this.answerNo.removeEventListener('click', this.setQuizAnswer);
   };
 
   /**
@@ -54,17 +54,16 @@ define(['./loadImage'], function(loadImage) {
    * Загружает изображение
    */
   Review.prototype.imageLoad = function() {
-    var self = this;
-    loadImage(self.data.author.picture, function(status) {
+    loadImage(this.data.author.picture, function(status) {
       if(status) {
-        var imgTemplate = self.element.querySelector('.review-author');
-        imgTemplate.src = self.data.author.picture;
+        var imgTemplate = this.element.querySelector('.review-author');
+        imgTemplate.src = this.data.author.picture;
         imgTemplate.width = 124;
         imgTemplate.height = 124;
       } else {
-        self.element.classList.add('review-load-failure');
+        this.element.classList.add('review-load-failure');
       }
-    });
+    }.bind(this));
   };
 
   return Review;

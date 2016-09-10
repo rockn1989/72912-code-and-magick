@@ -18,6 +18,9 @@ define(function() {
     this.previewNumberCurrent = this.overlayGallery.querySelector('.preview-number-current');
     this.previewNumberTotal = this.overlayGallery.querySelector('.preview-number-total');
     this.previewNumberTotal.textContent = this.pictures.length;
+    this.hide = this.hide.bind(this);
+    this.prev = this.prev.bind(this);
+    this.next = this.next.bind(this);
   }
 
   /**
@@ -25,17 +28,9 @@ define(function() {
    * @param {number} idx Принимает число. Индекс массива с путями картинок
    */
   Gallery.prototype.show = function(idx) {
-    var self = this;
-
-    this.galleryClose.onclick = function() {
-      self.hide();
-    };
-    this.controlLeft.onclick = function() {
-      self.prev();
-    };
-    this.controlRight.onclick = function() {
-      self.next();
-    };
+    this.galleryClose.addEventListener('click', this.hide);
+    this.controlLeft.addEventListener('click', this.prev);
+    this.controlRight.addEventListener('click', this.next);
     this.setActivePicture(idx);
     this.overlayGallery.classList.remove('invisible');
   };
@@ -44,9 +39,9 @@ define(function() {
    * Скрыть галерею
    */
   Gallery.prototype.hide = function() {
-    this.galleryClose.onclick = null;
-    this.controlLeft.onclick = null;
-    this.controlRight.onclick = null;
+    this.galleryClose.removeEventListener('click', this.hide);
+    this.controlLeft.removeEventListener('click', this.prev);
+    this.controlRight.removeEventListener('click', this.next);
     this.overlayGallery.classList.add('invisible');
   };
 
@@ -57,7 +52,6 @@ define(function() {
     if(this.activePicture !== 0) {
       this.setActivePicture(this.activePicture - 1);
     }
-
   };
 
   /**

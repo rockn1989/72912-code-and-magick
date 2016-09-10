@@ -259,12 +259,10 @@ define(['./throttle'], function(throttle) {
 
     this.setDeactivated(false);
 
-    var self = this;
-
     this.clouds = document.querySelector('.header-clouds');
     this.clouds.style.backgroundPosition = 'top left ' + 0 + 'px';
-    this._onCloudsMove = this._cloudsMove.bind(self);
-    this._onSetScrollEnabled = this._setScrollEnabled.bind(self);
+    this._onCloudsMove = this._cloudsMove.bind(this);
+    this._onSetScrollEnabled = this._setScrollEnabled.bind(this);
     this._onThrottleScroll = throttle(this._onSetScrollEnabled, 100);
 
     window.addEventListener('scroll', this._onThrottleScroll);
@@ -775,19 +773,18 @@ define(['./throttle'], function(throttle) {
     },
 
     _setScrollEnabled: function() {
-      var self = this;
       var clouds = this.clouds;
       var demo = document.querySelector('.demo');
       var elementsPosition = clouds.getBoundingClientRect().bottom;
       var gameBlockPosition = demo.getBoundingClientRect().bottom;
 
       if(elementsPosition <= 0) {
-        window.removeEventListener('scroll', self._onCloudsMove);
+        window.removeEventListener('scroll', this._onCloudsMove);
       } else {
-        window.addEventListener('scroll', self._onCloudsMove);
+        window.addEventListener('scroll', this._onCloudsMove);
       }
       if(gameBlockPosition <= 0) {
-        self.setGameStatus(Verdict.PAUSE);
+        this.setGameStatus(Verdict.PAUSE);
       }
 
     },
