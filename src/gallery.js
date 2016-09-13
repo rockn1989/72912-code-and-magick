@@ -18,9 +18,15 @@ define(function() {
     this.previewNumberCurrent = this.overlayGallery.querySelector('.preview-number-current');
     this.previewNumberTotal = this.overlayGallery.querySelector('.preview-number-total');
     this.previewNumberTotal.textContent = this.pictures.length;
+
     this.hide = this.hide.bind(this);
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
+    this.show = this.show.bind(this);
+
+    this.checkHashStatus = this.checkHashStatus.bind(this);
+    this.checkHashStatus();
+    window.addEventListener('hashchange', this.checkHashStatus);
   }
 
   /**
@@ -39,6 +45,7 @@ define(function() {
    * Скрыть галерею
    */
   Gallery.prototype.hide = function() {
+    location.hash = '';
     this.galleryClose.removeEventListener('click', this.hide);
     this.controlLeft.removeEventListener('click', this.prev);
     this.controlRight.removeEventListener('click', this.next);
@@ -50,7 +57,7 @@ define(function() {
    */
   Gallery.prototype.prev = function() {
     if(this.activePicture !== 0) {
-      this.setActivePicture(this.activePicture - 1);
+      this.setHash(this.activePicture - 1);
     }
   };
 
@@ -59,29 +66,54 @@ define(function() {
    */
   Gallery.prototype.next = function() {
     if(this.activePicture !== this.pictures.length - 1) {
-      this.setActivePicture(this.activePicture + 1);
+      this.setHash(this.activePicture + 1);
     }
   };
 
   /**
    * Показать текущую картинку
-   * @param {number} imgIndex Индекс текущей картинки в массиве с путями картинок
+   * @param {number | string} imgIndex Индекс текущей картинки в массиве с путями картинок
    */
   Gallery.prototype.setActivePicture = function(imgIndex) {
     var oldImg = this.previewBlock.querySelector('img');
-    this.activePicture = imgIndex;
-    var newImgSrc = this.pictures[this.activePicture];
     var newImg = new Image();
-
-    newImg.src = newImgSrc;
-    if(oldImg) {
+    if(typeof imgIndex !== 'number') {
+      this.activePicture = this.pictures.indexOf(imgIndex);
+    } else {
+      this.activePicture = imgIndex;
+    }
+    newImg.src = this.pictures[this.activePicture];
+    if (oldImg) {
       this.previewBlock.replaceChild(newImg, oldImg);
     } else {
       this.previewBlock.appendChild(newImg);
     }
-
     this.previewNumberCurrent.textContent = this.activePicture + 1;
+  };
+  /**
+   * Записывает значение в хэш страницы
+   * @param {number} [imgSrc] индекса массива
+   */
+  Gallery.prototype.setHash = function(imgSrc) {
+    if(typeof imgSrc === 'number') {
+      location.hash = 'photo/' + this.pictures[imgSrc];
+    } else {
+      location.hash = '';
+    }
+  };
 
+  /**
+   *  Получение хэша страницы
+   */
+  Gallery.prototype.checkHashStatus = function() {
+    var parseUrl = location.hash.match(/#photo\/(\S+)/);
+    if(parseUrl) {
+      if(this.pictures.indexOf(parseUrl[1]) !== -1) {
+        this.show(parseUrl[1]);
+      }
+    } else {
+      this.hide();
+    }
   };
 
   return Gallery;

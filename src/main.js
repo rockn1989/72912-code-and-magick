@@ -24,14 +24,14 @@ define(['./form', './game', './gallery', './reviews'], function(form, Game, Gall
   var galleryLink = document.querySelectorAll('.photogallery .photogallery-image');
 
   var picture = Array.prototype.map.call(galleryImg, function(img) {
-    return img.src;
+    return img.getAttribute('src');
   });
 
   var gallery = new Gallery(picture);
 
   Array.prototype.forEach.call(galleryLink, function(link, i) {
     link.addEventListener('click', function() {
-      gallery.show(i);
+      gallery.setHash(i);
     });
   });
 });
