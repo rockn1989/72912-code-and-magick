@@ -1,24 +1,24 @@
 'use strict';
 
-define(['./loadImage'], function(loadImage) {
+define(['./loadImage', './support', './base-component'], function(loadImage, inherit, BaseComponent) {
   var templateElement = document.querySelector('#review-template');
   var elementToClone = (templateElement.content || templateElement).querySelector('.review');
+  inherit(Review, BaseComponent);
 
 /**
  * Шаблонизирует отзыв
  * @param {ReviewData[]} data Объект отзыва с данными
- * @returns {object} объект блока отзыва
+ * @constructor
  */
   function Review(data) {
     this.data = data;
-    this.element = elementToClone.cloneNode(true);
+    BaseComponent.call(this, elementToClone.cloneNode(true));
     this.answerYes = this.element.querySelector('.review-quiz-answer-yes');
     this.answerNo = this.element.querySelector('.review-quiz-answer-no');
     this.element.querySelector('.review-text').textContent = this.data.description;
     this.setRating();
 
     this.setQuizAnswer = this.setQuizAnswer.bind(this);
-    this.remove = this.remove.bind(this);
     this.answerYes.addEventListener('click', this.setQuizAnswer);
     this.answerNo.addEventListener('click', this.setQuizAnswer);
     this.imageLoad();
@@ -40,6 +40,7 @@ define(['./loadImage'], function(loadImage) {
   Review.prototype.remove = function() {
     this.answerYes.removeEventListener('click', this.setQuizAnswer);
     this.answerNo.removeEventListener('click', this.setQuizAnswer);
+    BaseComponent.prototype.remove.call(this);
   };
 
   /**
@@ -65,6 +66,5 @@ define(['./loadImage'], function(loadImage) {
       }
     }.bind(this));
   };
-
   return Review;
 });
