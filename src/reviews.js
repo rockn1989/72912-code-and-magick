@@ -8,9 +8,17 @@ define(['./load', './review'], function(load, Review) {
   var reviewsList = document.querySelector('.reviews-list');
   var reviewsLoadMore = document.querySelector('.reviews-controls-more');
   var filter = localStorage.filterSave || 'reviews-all';
+
+  /**
+   * Массив для хранения созданных отзывов
+   * @type {Review[]}
+   */
+  var reviewArray = [];
+
   if(filter) {
     reviewsFilter.querySelector('#' + filter).checked = true;
   }
+
   /**
    * Выводит постранично сообщения
    */
@@ -21,7 +29,10 @@ define(['./load', './review'], function(load, Review) {
   }
 
   reviewsFilter.addEventListener('change', function(evt) {
-    reviewsList.innerHTML = '';
+    reviewArray.forEach(function(review) {
+      review.remove();
+    });
+    reviewArray = [];
     pagePosts = 1;
     filter = evt.target.id;
     localStorage.setItem('filterSave', evt.target.id);
@@ -53,6 +64,7 @@ define(['./load', './review'], function(load, Review) {
 
     reviews.forEach(function(reviewData) {
       var review = new Review(reviewData);
+      reviewArray.push(review);
       elFragment.appendChild(review.element);
     });
     reviewsList.appendChild(elFragment);
