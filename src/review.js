@@ -1,6 +1,6 @@
 'use strict';
 
-define(['./loadImage', './support', './base-component'], function(loadImage, inherit, BaseComponent) {
+define(['./loadImage', './support', './base-component', './review-data'], function(loadImage, inherit, BaseComponent, ReviewData) {
   var templateElement = document.querySelector('#review-template');
   var elementToClone = (templateElement.content || templateElement).querySelector('.review');
   inherit(Review, BaseComponent);
@@ -11,18 +11,26 @@ define(['./loadImage', './support', './base-component'], function(loadImage, inh
  * @constructor
  */
   function Review(data) {
-    this.data = data;
+    this.data = new ReviewData(data);
     BaseComponent.call(this, elementToClone.cloneNode(true));
     this.answerYes = this.element.querySelector('.review-quiz-answer-yes');
     this.answerNo = this.element.querySelector('.review-quiz-answer-no');
-    this.element.querySelector('.review-text').textContent = this.data.description;
-    this.setRating();
+    this.element.querySelector('.review-text').textContent = this.data.getDescription();
 
+    this.setRating();
     this.setQuizAnswer = this.setQuizAnswer.bind(this);
     this.answerYes.addEventListener('click', this.setQuizAnswer);
     this.answerNo.addEventListener('click', this.setQuizAnswer);
     this.imageLoad();
   }
+
+  /**
+   * Устанавливает значение рейтинга
+   */
+  Review.prototype.setRating = function() {
+    var ratingsArray = ['one', 'two', 'three', 'four', 'five'];
+    this.element.querySelector('.review-rating').classList.add('review-rating-' + ratingsArray[this.data.getRating() - 1]);
+  };
 
   /**
    * Выделяет правильный ответ
@@ -44,21 +52,13 @@ define(['./loadImage', './support', './base-component'], function(loadImage, inh
   };
 
   /**
-   * Устанавливает рейтинг
-   */
-  Review.prototype.setRating = function() {
-    var ratingsArray = ['one', 'two', 'three', 'four', 'five'];
-    this.element.querySelector('.review-rating').classList.add('review-rating-' + ratingsArray[this.data.rating - 1]);
-  };
-
-  /**
    * Загружает изображение
    */
   Review.prototype.imageLoad = function() {
-    loadImage(this.data.author.picture, function(status) {
+    loadImage(this.data.getAuthorPicture(), function(status) {
       if(status) {
         var imgTemplate = this.element.querySelector('.review-author');
-        imgTemplate.src = this.data.author.picture;
+        imgTemplate.src = this.data.getAuthorPicture();
         imgTemplate.width = 124;
         imgTemplate.height = 124;
       } else {
