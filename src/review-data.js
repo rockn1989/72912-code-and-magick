@@ -25,5 +25,17 @@ define(function() {
   ReviewData.prototype.getAuthorPicture = function() {
     return this.data.author.picture;
   };
+
+  /**
+   * Проверяет входящие данные
+   * @param {boolean} value
+   * @param {function} callback Ответ на изменение объекта
+   */
+  ReviewData.prototype.updateStatus = function(value, callback) {
+    this.valueStatus = value ? 1 : -1;
+    this.data.review_usefulness += this.valueStatus;
+    callback(value);
+  };
+
   return ReviewData;
 });
