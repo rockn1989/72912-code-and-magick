@@ -19,6 +19,7 @@ define(['./loadImage', './support', './base-component', './review-data'], functi
 
     this.setRating();
     this.setQuizAnswer = this.setQuizAnswer.bind(this);
+    this.onUsefulnessChange = this.onUsefulnessChange.bind(this);
     this.answerYes.addEventListener('click', this.setQuizAnswer);
     this.answerNo.addEventListener('click', this.setQuizAnswer);
     this.imageLoad();
@@ -33,13 +34,21 @@ define(['./loadImage', './support', './base-component', './review-data'], functi
   };
 
   /**
-   * Выделяет правильный ответ
+   * Записывает ответ
    * @param {HTMLInputElement} evt
    */
   Review.prototype.setQuizAnswer = function(evt) {
     var isYes = evt.target.classList.contains('review-quiz-answer-yes');
-    this.answerYes.classList.toggle('review-quiz-answer-active', isYes);
-    this.answerNo.classList.toggle('review-quiz-answer-active', !isYes);
+    this.data.updateStatus(isYes, this.onUsefulnessChange);
+  };
+
+  /**
+   * Выделяет ответ
+   * @param {boolean} response
+   */
+  Review.prototype.onUsefulnessChange = function(response) {
+    this.answerYes.classList.toggle('review-quiz-answer-active', response);
+    this.answerNo.classList.toggle('review-quiz-answer-active', !response);
   };
 
   /**
